@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_22_142249) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_22_181916) do
   create_table "insights", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "event_type"
     t.integer "listing_id", null: false
+    t.datetime "occurred_at"
     t.datetime "updated_at", null: false
     t.index ["listing_id"], name: "index_insights_on_listing_id"
   end
