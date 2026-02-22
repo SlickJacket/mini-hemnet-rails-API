@@ -20,6 +20,5 @@ module Listings
 
         Success = Struct.new(:listing)
         Failure = Struct.new(:errors)
-
     end
 end
