@@ -5,7 +5,7 @@ module Insights
         end
 
         def call
-            insight = @lising.insight.new(
+            insight = @listing.insights.new(
                 event_type: "save",
                 occurred_at: Time.current
             )

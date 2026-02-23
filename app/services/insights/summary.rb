@@ -29,6 +29,6 @@ module Insights
                 .count
         end
 
-        Success = Struct.new(:data)
+        Success = Struct.new(:total_views, :total_saves, :total_inquiries, :views_per_day, keyword_init: true)
     end
 end

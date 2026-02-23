@@ -1,0 +1,84 @@
+class ListingsController < ApplicationController
+  before_action :set_listing, only: [:show, :update, :destroy, :view, :save_event, :inquiry, :insights]
+
+  # GET /listings
+  def index
+    listings = Listing.all
+    render json: listings, status: :ok
+  end
+
+  # GET /listings/:id
+  def show
+    render json: @listing, status: :ok
+  end
+
+  # POST /listings
+  def create
+    result = Listings::CreateListing.new(listing_params).call
+
+    if result.is_a?(Listings::CreateListing::Success)
+      render json: result.listing, status: :created
+    else
+      render json: { errors: result.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH/PUT /listings/:id
+  def update
+    result = Listings::UpdateListing.new(@listing, listing_params).call
+
+    if result.is_a?(Listings::UpdateListing::Success)
+      render json: result.listing, status: :ok
+    else
+      render json: { errors: result.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /listings/:id
+  def destroy
+    @listing.destroy
+    head :no_content
+  end
+
+  # POST /listings/:id/view
+  def view
+    result = Insights::RecordView.new(@listing).call
+    render json: result.insight, status: :created
+  end
+
+  # POST /listings/:id/save_event
+  def save_event
+    result = Insights::RecordSave.new(@listing).call
+    render json: result.insight, status: :created
+  end
+
+  # POST /listings/:id/inquiry
+  def inquiry
+    result = Insights::RecordInquiry.new(@listing).call
+    render json: result.insight, status: :created
+  end
+
+  # GET /listings/:id/insights
+  def insights
+  result = Insights::Summary.new(@listing).call
+
+  render json: {
+    total_views: result.total_views,
+    total_saves: result.total_saves,
+    total_inquiries: result.total_inquiries,
+    views_per_day: result.views_per_day
+  }, status: :ok
+  end
+  
+
+
+  private
+
+  def set_listing
+    @listing = Listing.find(params[:id])
+  end
+
+  def listing_params
+    params.require(:listing).permit(:title, :description, :price, :address)
+  end
+end
