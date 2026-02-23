@@ -24,10 +24,12 @@ class InsightsController < ApplicationController
   end
 
 
-  def timeseries
-    query = InsightsQuery.new(listing: @listing, params: params)
-    render json: query.timeseries
-  end
+    def timeseries
+        query = InsightsQuery.new(listing: @listing, params: params)
+        render json: { interval: params[:interval] || "daily",
+        data: query.timeseries,
+        trend: query.trend }
+    end
 
   private
 

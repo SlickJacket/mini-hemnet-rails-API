@@ -46,7 +46,7 @@ puts "Creating listings..."
     Insight.create!(
       listing_id: listing.id,
       event_type: EVENT_TYPES.sample,
-      occurred_at: Faker::Time.between(from: created_at, to: Date.today)
+      occurred_at: rand(1..30).days.ago
     )
   end
 end
