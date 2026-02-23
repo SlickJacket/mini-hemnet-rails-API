@@ -6,13 +6,15 @@ class ListingsController < ApplicationController
 
   # GET /listings
   def index
-    pagy, listings = pagy(Listing.order(created_at: :desc))
+    listings = ListingsQuery.new(params).call
+    pagy, listings = pagy(listings)
 
     render json: {
       listings: ActiveModelSerializers::SerializableResource.new(listings),
       pagination: pagy_metadata(pagy)
     }, status: :ok
   end
+
 
   # GET /listings/:id
   def show
