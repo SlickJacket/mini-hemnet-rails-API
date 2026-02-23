@@ -2,7 +2,7 @@ class ListingsController < ApplicationController
   include Pagy::Backend
   include Pagy::Frontend
 
-  before_action :set_listing, only: [ :show, :update, :destroy, :view, :save_event, :inquiry, :insights ]
+  before_action :set_listing, only: [ :show, :update, :destroy, :view, :save_event, :inquiry ]
 
   # GET /listings
   def index
@@ -65,18 +65,6 @@ class ListingsController < ApplicationController
   def inquiry
     result = Insights::RecordInquiry.new(@listing).call
     render json: result.insight, status: :created
-  end
-
-  # GET /listings/:id/insights
-  def insights
-    result = Insights::Summary.new(@listing).call
-
-    render json: {
-      total_views: result.total_views,
-      total_saves: result.total_saves,
-      total_inquiries: result.total_inquiries,
-      views_per_day: result.views_per_day
-    }, status: :ok
   end
 
   private
