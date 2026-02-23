@@ -1,10 +1,17 @@
 class ListingsController < ApplicationController
+  include Pagy::Backend
+  include Pagy::Frontend
+
   before_action :set_listing, only: [ :show, :update, :destroy, :view, :save_event, :inquiry, :insights ]
 
   # GET /listings
   def index
-    listings = Listing.all
-    render json: listings, status: :ok
+    pagy, listings = pagy(Listing.order(created_at: :desc))
+
+    render json: {
+      listings: ActiveModelSerializers::SerializableResource.new(listings),
+      pagination: pagy_metadata(pagy)
+    }, status: :ok
   end
 
   # GET /listings/:id
@@ -60,17 +67,15 @@ class ListingsController < ApplicationController
 
   # GET /listings/:id/insights
   def insights
-  result = Insights::Summary.new(@listing).call
+    result = Insights::Summary.new(@listing).call
 
-  render json: {
-    total_views: result.total_views,
-    total_saves: result.total_saves,
-    total_inquiries: result.total_inquiries,
-    views_per_day: result.views_per_day
-  }, status: :ok
+    render json: {
+      total_views: result.total_views,
+      total_saves: result.total_saves,
+      total_inquiries: result.total_inquiries,
+      views_per_day: result.views_per_day
+    }, status: :ok
   end
-
-
 
   private
 
@@ -79,6 +84,9 @@ class ListingsController < ApplicationController
   end
 
   def listing_params
-    params.require(:listing).permit(:title, :description, :price, :address, :measurement, :rooms, :bathrooms, :floors, :date_sold)
+    params.require(:listing).permit(
+      :title, :description, :price, :address,
+      :measurement, :rooms, :bathrooms, :floors, :date_sold
+    )
   end
 end
