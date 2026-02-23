@@ -1,34 +1,48 @@
+require "ostruct"
+
 module Insights
-    class Summary
-        def initialize(listing)
-            @listing = listing
-        end
-
-        def call
-            insights = @listing.insights
-
-            Success.new(
-                total_views: count(insights, "view"),
-                total_saves: count(insights, "save"),
-                total_inquiries: count(insights, "inquiry"),
-                views_per_day: group_by_day(insights, "view")
-            )
-        end
-
-        private
-
-        def count(scope, event_type)
-            scope.where(event_type: event_type).count
-        end
-
-        def group_by_day(scope, event_type)
-            scope
-                .where(event_type: event_type)
-                .group("DATE(occurred_at)")
-                .order("DATE(occurred_at)")
-                .count
-        end
-
-        Success = Struct.new(:total_views, :total_saves, :total_inquiries, :views_per_day, keyword_init: true)
+  class Summary
+    def initialize(listing)
+      @listing = listing
     end
+
+    def call
+      events = Insight.where(listing_id: @listing.id)
+
+      OpenStruct.new(
+        total_views: count(events, "view"),
+        total_saves: count(events, "save"),
+        total_inquiries: count(events, "inquiry"),
+        funnel: funnel(events),
+        engagement_score: engagement_score(events)
+      )
+    end
+
+    private
+
+    def count(events, type)
+      events.where(event_type: type).count
+    end
+
+    def funnel(events)
+      {
+        views: count(events, "view"),
+        saves: count(events, "save"),
+        inquiries: count(events, "inquiry")
+      }
+    end
+
+    # Simple engagement score (Hemnet uses something similar)
+    # You can tune this later
+    def engagement_score(events)
+      views = count(events, "view")
+      saves = count(events, "save")
+      inquiries = count(events, "inquiry")
+
+      return 0 if views == 0
+
+      # Weighted formula
+      (((saves * 2) + (inquiries * 4)) / views.to_f).round(1)
+    end
+  end
 end

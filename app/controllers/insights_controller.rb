@@ -12,9 +12,17 @@ class InsightsController < ApplicationController
   end
 
   def summary
-    query = InsightsQuery.new(listing: @listing, params: params)
-    render json: query.summary
+    result = Insights::Summary.new(@listing).call
+
+    render json: {
+        total_views: result.total_views,
+        total_saves: result.total_saves,
+        total_inquiries: result.total_inquiries,
+        funnel: result.funnel,
+        engagement_score: result.engagement_score
+    }, status: :ok
   end
+
 
   def timeseries
     query = InsightsQuery.new(listing: @listing, params: params)
