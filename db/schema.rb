@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_22_181916) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_24_091341) do
   create_table "insights", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "event_type"
@@ -18,6 +18,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_22_181916) do
     t.datetime "occurred_at"
     t.datetime "updated_at", null: false
     t.index ["listing_id"], name: "index_insights_on_listing_id"
+  end
+
+  create_table "listing_images", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "image_url"
+    t.integer "listing_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["listing_id"], name: "index_listing_images_on_listing_id"
   end
 
   create_table "listings", force: :cascade do |t|
@@ -35,4 +43,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_22_181916) do
   end
 
   add_foreign_key "insights", "listings"
+  add_foreign_key "listing_images", "listings"
 end

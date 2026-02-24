@@ -1,5 +1,6 @@
 class Listing < ApplicationRecord
     has_many :insights, dependent: :destroy
+    has_many :listing_images, dependent: :destroy
 
     validates :title, presence: true
     validates :description, presence: true

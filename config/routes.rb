@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :listings do
+    resources :listing_images, only: [ :index ]
     member do
       post :view
       post :save_event
