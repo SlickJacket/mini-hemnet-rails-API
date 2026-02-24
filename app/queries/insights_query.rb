@@ -14,17 +14,19 @@ class InsightsQuery
     end
 
     def timeseries
-        interval = (@params[:interval] || "day").downcase
+        Rails.cache.fetch(timeseries_cache_key, expires_in: 10.minutes) do
+            interval = (@params[:interval] || "day").downcase
 
-        case interval
-        when "day", "daily"
-                    group_by_day
-        when "week", "weekly"
-                    group_by_week
-        when "month", "monthly"
-                    group_by_month
-        else
-                    group_by_day
+            case interval
+            when "day", "daily"
+                        group_by_day
+            when "week", "weekly"
+                        group_by_week
+            when "month", "monthly"
+                        group_by_month
+            else
+                        group_by_day
+            end
         end
     end
 
@@ -49,6 +51,11 @@ class InsightsQuery
 
 
     private
+
+    def timeseries_cache_key
+        interval = (@params[:interval] || "day").downcase
+        "listing:#{@listing.id}:insights:timeseries:#{interval}"
+    end
 
     def group_by_day
     {

@@ -7,18 +7,24 @@ module Insights
     end
 
     def call
-      events = Insight.where(listing_id: @listing.id)
+      Rails.cache.fetch(cache_key, expires_in: 10.minutes) do
+        events = Insight.where(listing_id: @listing.id)
 
-      OpenStruct.new(
-        total_views: count(events, "view"),
-        total_saves: count(events, "save"),
-        total_inquiries: count(events, "inquiry"),
-        funnel: funnel(events),
-        engagement_score: engagement_score(events)
-      )
+        OpenStruct.new(
+          total_views: count(events, "view"),
+          total_saves: count(events, "save"),
+          total_inquiries: count(events, "inquiry"),
+          funnel: funnel(events),
+          engagement_score: engagement_score(events)
+        )
+      end
     end
 
     private
+
+    def cache_key
+      "listing:#{@listing.id}:insights:summary"
+    end
 
     def count(events, type)
       events.where(event_type: type).count
