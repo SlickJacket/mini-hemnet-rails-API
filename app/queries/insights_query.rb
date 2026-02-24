@@ -52,7 +52,7 @@ class InsightsQuery
 
     private
 
-    def timeseries_cache_key 
+    def timeseries_cache_key
         interval = (@params[:interval] || "day").downcase
         "listing:#{@listing.id}:insights:timeseries:#{interval}"
     end

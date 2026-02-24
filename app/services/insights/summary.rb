@@ -22,7 +22,7 @@ module Insights
 
     private
 
-    def cache_key 
+    def cache_key
       "listing:#{@listing.id}:insights:summary"
     end
 
