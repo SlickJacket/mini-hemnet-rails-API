@@ -14,22 +14,35 @@ class InsightsController < ApplicationController
   def summary
     result = Insights::Summary.new(@listing).call
 
+    trend = Insights::TrendCalculator.new(
+      listing: @listing,
+      interval: params[:interval] || "daily"
+    ).call
+
     render json: {
-        total_views: result.total_views,
-        total_saves: result.total_saves,
-        total_inquiries: result.total_inquiries,
-        funnel: result.funnel,
-        engagement_score: result.engagement_score
-    }, status: :ok
+      total_views: result.total_views,
+      total_saves: result.total_saves,
+      total_inquiries: result.total_inquiries,
+      funnel: result.funnel,
+      engagement_score: result.engagement_score,
+      trend: trend
+    }
   end
 
+  def timeseries
+    query = InsightsQuery.new(listing: @listing, params: params)
 
-    def timeseries
-        query = InsightsQuery.new(listing: @listing, params: params)
-        render json: { interval: params[:interval] || "daily",
-        data: query.timeseries,
-        trend: query.trend }
-    end
+    trend = Insights::TrendCalculator.new(
+      listing: @listing,
+      interval: params[:interval] || "daily"
+    ).call
+
+    render json: {
+      interval: params[:interval] || "daily",
+      data: query.timeseries,
+      trend: trend
+    }
+  end
 
   private
 

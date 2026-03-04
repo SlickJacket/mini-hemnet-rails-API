@@ -10,8 +10,8 @@ class ListingsController < ApplicationController
     pagy, listings = pagy(listings)
 
     render json: {
-      listings: ActiveModelSerializers::SerializableResource.new(listings),
-      pagination: pagy_metadata(pagy)
+    listings: ActiveModelSerializers::SerializableResource.new(listings, each_serializer: ListingSerializer),
+    pagination: pagy_metadata(pagy)
     }, status: :ok
   end
 
