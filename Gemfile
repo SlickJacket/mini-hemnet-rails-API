@@ -37,7 +37,7 @@ gem "image_processing", "~> 1.2"
 
 gem "active_model_serializers", "~> 0.10.0"
 
-gem "pagy", "~> 6.0"
+gem "pagy", "~> 43.4"
 
 gem "rack-cors"
 
